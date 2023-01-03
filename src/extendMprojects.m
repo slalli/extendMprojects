@@ -142,8 +142,9 @@ extendFile(buffer,defs)
 	quit *bufferAfter
 	;
 	;
-	;
+	; ---------------------------
 	; DEFINITIONS
+	; ---------------------------
 	;; CMD B BREAK
 	;; CMD C CLOSE
 	;; CMD D DO
