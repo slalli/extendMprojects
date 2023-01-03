@@ -6,21 +6,20 @@ extendMprojects quit
 ; sourceDir		directory where the .m files are
 ; action		defaults to RR. Action can be: RR (replace and rename), RE (replace), NE (new name: original name + '.extended')
 ; ****************************************	
-start(sourceDir,action) 
+start(sourceDir) 
 	write !!,"**********************************"
 	write !,"Extend M project "_$piece($text(+2)," ",3,4)
 	write !,"**********************************"
 	;
 	; Validate path
-	if $get(sourceDir)="" do  quit
-	. write !!,"No source file was specified...",!!,"Quitting"
+	if $get(sourceDir)="" read !!,"Enter the directory:",sourceDir
 	;
 	if $zsearch(sourceDir)="" do  quit
-	. write !!,"File not found...",!!,"Quitting"
+	. write !!,"Directory not found...",!!,"Quitting"
 	;
-	write !!
+	write !
 	;
-	new file,files,replaceType,cnt,inputStr,defs,line
+	new file,files,replaceType,marginType,cnt,inputStr,defs,line,action
 	new bufferIn,bufferOut
 	;
 	; Check # of files in dir
@@ -32,16 +31,25 @@ start(sourceDir,action)
 	if $data(files)=0 do  quit
 	. write !!,"Directory doesn't contain any .m file...",!!,"Quitting"
 	;
-	write !!,"Files found in "_sourceDir_": "_files
+	write !,"Files found in "_sourceDir_": "_files
 	;
 	; Prompt for conversion type: upper case or lower case
 askAgainType
-	read !!,"How do you want to convert ? (U)pper case, (L)ower case, (Q)uit ",inputStr
+	read !!,"How do you want to convert the strings ? (U)pper case, (L)ower case, (Q)uit ",inputStr
 	set inputStr=$$FUNC^%UCASE(inputStr)
 	if inputStr="Q" do  quit
 	. write !!,"Bye bye",!!
 	if inputStr="U"!(inputStr="L") set replaceType=inputStr
 	else  goto askAgainType
+	;
+	; Prompt for left margin
+askAgainMargin
+	read !!,"How do you want to convert the left margin ? (A)s it is, (1) space, (4) spaces, (Q)uit ",inputStr
+	set inputStr=$$FUNC^%UCASE(inputStr)
+	if inputStr="Q" do  quit
+	. write !!,"Bye bye",!!
+	if inputStr="A"!(inputStr="1")!(inputStr="4") set marginType=$select(inputStr="A":0,1:+inputStr)
+	else  goto askAgainMargin
 	;
 	; Prompt for the action
 askAgainAction
@@ -93,32 +101,43 @@ askAgainAction
 	;
 extendFile(buffer,defs)
 	new bufferAfter,cnt,line,cmd,lastPos,foundPos,match,newLine
+	new charCnt,char,charQuit
 	;
 	set cnt=0
 	for  set cnt=$order(buffer(cnt)) quit:cnt=""  do
 	. set line=buffer(cnt)
-	. write !,">>>",line
-	. ; begin with commands
+	. ; -------------------------
+	. ; left margin
+	. ; -------------------------
+	. if marginType>0 do
+	. . w !,$a($extract(line,1,1))
+	. . if $extract(line,1,1)'=" ",$extract(line,1,1)'=$char(9) quit
+	. . set charQuit=0
+	. . for charCnt=1:1:$length(line) do  quit:charQuit
+	. . . set char=$extract(line,charCnt,charCnt)
+	. . . if char'=" ",char'=$char(9) set charQuit=charCnt
+	. . w !,"charQuit:",charQuit
+	. . set line=$select(marginType=1:" ",marginType=4:"    ",1:" ")_$extract(line,charQuit,$length(line))
+	. ; -------------------------
+	. ; commands
+	. ; -------------------------
 	. set (cmd,newLine)=""
 	. for  set cmd=$order(defs("CMD",cmd)) quit:cmd=""  do
 	. . set foundPos=0,lastPos=1,match=""
 	. . for  set foundPos=$find(line,cmd,lastPos) quit:foundPos=0  do
-	. . . write !,"foundPos:",foundPos
 	. . . set match=$extract(line,foundPos-1)
-	. . . write !,"match: "_match
 	. . . ; is next char either a space/tab or a : AND (is it first char OR prev char is space/tab)
 	. . . if $extract(line,foundPos)=" "!($extract(line,foundPos)=$char(9))!($extract(line,foundPos)=":"),lastPos=2!($extract(line,foundPos-2)=" ")!($extract(line,foundPos-2)=$char(9)) do
 	. . . . ; Replace
-	. . . . write !,"...replacing"
 	. . . . set newLine=newLine_$extract(line,lastPos,foundPos-2)_defs("CMD",cmd)
 	. . . . set line=$extract(line,foundPos,$length(line))
-	. . . . write !,"...",newLine
 	. . . ;
 	. . . set lastPos=foundPos
 	. ;
 	. if newLine="" set newLine=line
-	. if $length(line)'=$length(newLine) set newLine=newLine_$extract(line,foundPos,$length(line))
+	. else  if $length(line)'=$length(newLine) set newLine=newLine_$extract(line,foundPos,$length(line))
 	. set bufferAfter(cnt)=newLine
+	. ;
 	;	
 	quit *bufferAfter
 	;
@@ -127,12 +146,11 @@ extendFile(buffer,defs)
 	; DEFINITIONS
 	;; CMD B BREAK
 	;; CMD C CLOSE
+	;; CMD D DO
 	;; CMD S SET
 	;; CMD W WRITE
 	;; IFN A ASCII
 	;; IFN C CHAR
 	;; ISV D DEVICE
 	;; ISV EC ECODE
-	;
-	;
 	;
