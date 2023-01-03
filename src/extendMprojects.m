@@ -28,7 +28,7 @@ start(sourceDir,action)
 	for  set file=$zsearch(sourceDir_"*.m") quit:file=""  set files(file)="",cnt=cnt+1
 	set files=cnt
 	;
-	if $data(files)=0 do
+	if $data(files)=0 do  quit
  	. write !!,"Directory doesn't contain any .m file...",!!,"Quitting"
 	;
 	write !!,"Files found in "_sourceDir_": "_files
@@ -51,11 +51,7 @@ askAgainAction
 	if inputStr="R"!(inputStr="A")!(inputStr="W") set action=inputStr
 	else  goto askAgainAction
 	;
-	; ----------------------------------------------
-	; We can start the conversion
-	; ----------------------------------------------
-	;	
-	; Populate the definition table
+	; Populate the definition table according to the replaceType
 	set cnt=0
 	for  set cnt=cnt+1,line=$text(+cnt) quit:line=""  do:$find(line,";;")
 	. set type=$piece(line," ",3),from=$piece(line," ",4),to=$piece(line," ",5)
@@ -63,6 +59,16 @@ askAgainAction
 	;
 	write !!,cnt,!
 	zwr defs
+	write !
+	;
+	; ----------------------------------------------
+	; We can start the conversion
+	; ----------------------------------------------
+	;	
+	;
+	;
+	;
+	;
 	;
 	; DEFINITIONS
 	;; CMD B BREAK
