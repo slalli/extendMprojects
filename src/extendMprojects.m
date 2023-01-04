@@ -111,7 +111,8 @@ proceed
 	;
 	set isv="" for  set isv=$order(defs("ISV",isv)) quit:isv=""  do
 	. set defs("replace","isv",isv_"=")=defs("ISV",isv)_"="
-	. set defs("replace","isv","="_isv)="="_defs("ISV",isv)
+	. set defs("replace","isv","="_isv_" ")="="_defs("ISV",isv)_" "
+	. set defs("replace","isv","="_isv_",")="="_defs("ISV",isv)_","
 	;
 	; ----------------------------------------------
 	; We can start the conversion
