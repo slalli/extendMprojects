@@ -54,4 +54,6 @@ PROCESS(SMSG,NOTIMEOUT,NOGC)
 	. ;
 	. D ERRandQUIT^%jhERROR(200003,SMSG("command","as",2))
 	;
+	s $d="test"
+	s a=$d
 

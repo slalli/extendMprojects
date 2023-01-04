@@ -20,7 +20,7 @@ start(sourceDir)
 	write !
 	;
 	new file,files,replaceType,marginType,cnt,inputStr,defs,line,action
-	new bufferIn,bufferOut
+	new bufferIn,bufferOut,cmd,ifn,isv
 	;
 	; Check # of files in dir
 	if $extract(sourceDir,$length(sourceDir))'="/" set sourceDir=sourceDir_"/"
@@ -67,6 +67,18 @@ askAgainAction
 	. set:type'="" defs(type,from)=$select(replaceType="L":$$FUNC^%LCASE(to),replaceType="U":$$FUNC^%UCASE(to),1:to)
 	. set:type'="" defs(type,$$FUNC^%LCASE(from))=$select(replaceType="L":$$FUNC^%LCASE(to),replaceType="U":$$FUNC^%UCASE(to),1:to)
 	;
+	;build replace buffer
+	set cmd="" for  set cmd=$order(defs("CMD",cmd)) quit:cmd=""  do
+	. set defs("replace","cmd"," "_cmd_" ")=" "_defs("CMD",cmd)_" "
+	. set defs("replace","cmd"," "_cmd_":")=" "_defs("CMD",cmd)_":"
+	;
+	set ifn="" for  set ifn=$order(defs("IFN",ifn)) quit:ifn=""  do
+	. set defs("replace","ifn",ifn_"(")=defs("IFN",ifn)_"("
+	;
+	set isv="" for  set isv=$order(defs("ISV",isv)) quit:isv=""  do
+	. set defs("replace","isv",isv_"=")=defs("ISV",isv)_"="
+	. set defs("replace","isv","="_isv)="="_defs("ISV",isv)
+	;
 	write !!,cnt,!
 	zwr defs
 	write !
@@ -101,13 +113,12 @@ askAgainAction
 	;
 	;
 extendFile(buffer,defs)
-	new bufferAfter,cnt,line,cmd,cmdReplace
+	new bufferAfter,cnt,line,cmd,cmdReplace,ifnReplace,isvReplace
 	;
-	;build replace buffer
-	kill spec
-	set cmd="" for  set cmd=$order(defs("CMD",cmd)) quit:cmd=""  do
-	. set cmdReplace(" "_cmd_" ")=" "_defs("CMD",cmd)_" "
-	. set cmdReplace(" "_cmd_":")=" "_defs("CMD",cmd)_":"
+	merge cmdReplace=defs("replace","cmd")
+	merge ifnReplace=defs("replace","ifn")
+	merge isvReplace=defs("replace","isv")
+	zwr isvReplace
 	;
 	set cnt=0
 	for  set cnt=$order(buffer(cnt)) quit:cnt=""  do
@@ -126,6 +137,11 @@ extendFile(buffer,defs)
 	. ; commands
 	. ; -------------------------
 	. set line=$$STRRPLC(line,.cmdReplace)
+	. ;
+	. ; -------------------------
+	. ; commands
+	. ; -------------------------
+	. set line=$$STRRPLC(line,.isvReplace)
 	. set bufferAfter(cnt)=line
 	;
 	quit *bufferAfter
@@ -182,6 +198,41 @@ extendFile(buffer,defs)
 	;; CMD ZWR ZWRITE
 	;; IFN $A $ASCII
 	;; IFN $C $CHAR
+	;; IFN $D $DATA
+	;; IFN $E $EXTRACT
+	;; IFN $F $FIND
+	;; IFN $FN $FNUMBER
+	;; IFN $G $GET
+	;; IFN $I $INCREMENT
+	;; IFN $J $JUSTIFY
+	;; IFN $L $LENGTH
+	;; IFN $N $NAME
+	;; IFN $P $PIECE
+	;; IFN $QL $QLENGTH
+	;; IFN $QS $QSUBSCRIPT
+	;; IFN $Q $QUERY
+	;; IFN $R $RANDOM
+	;; IFN $RE $REVERSE
+	;; IFN $S $SELECT
+	;; IFN $ST $STACK
+	;; IFN $T $TEXT
+	;; IFN $TR $TRANSLATE
+	;; IFN $V $VIEW
+	;; IFN $ZA $ZASCII
+	;; IFN $ZC $ZCHAR
+	;; IFN $ZCO $ZCONVERT
+	;; IFN $ZD $ZDATE
+	;; IFN $ZE $ZEXTRACT
+	;; IFN $ZF $ZFIND
+	;; IFN $ZJ $ZJUSTIFY
+	;; IFN $ZL $ZLENGTH
+	;; IFN $ZM $ZMESSAGE
+	;; IFN $ZPI $ZPIECE
+	;; IFN $ZP $ZPREVIOUS
+	;; IFN $ZSUB $ZSUBSTR
+	;; IFN $ZTR $ZTRANSLATE
+	;; IFN $ZTRI $ZTRIGGER
+	;; IFN $ZW $ZWIDTH
 	;; ISV $D $DEVICE
 	;; ISV $EC $ECODE
 	;
@@ -202,20 +253,5 @@ RE2 Q:$E(A7,A5-A4,A5-1)["X"  S A8(A5-A4)=SPEC(A3)
 RE3 I $E(A7,A2)=" " S A8=A8_$E(IN,A2) Q
 	S:$D(A8(A2)) A8=A8_A8(A2)
 	Q
-	;
-	;
-STRJR ;Right justify
-	N A3
-	S:A1["T" A1=+A1,A=$E(A,1,A1)
-	S A3=$J("",A1-$L(A)) S:$D(A2) A3=$TR(A3," ",A2)
-	Q A3_A
-	;
-	;
-STRJL ;Left justify
-	N A3
-	S:A1["T" A1=+A1,A=$E(A,1,A1)
-	S A3=$J("",A1-$L(A)) S:$G(A2)]"" A3=$TR(A3," ",A2)
-	Q A_A3
-	;
 	;
 	;
