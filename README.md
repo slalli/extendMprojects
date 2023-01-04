@@ -14,14 +14,14 @@ will be translated into:
 
 It will, additionally:
 - format the extended notation as upper case or lower case
-- indent the code (not the labels or comments as 1st char) as follows:
+- indent the code (not the labels or comments at 1st char) in one of the following way:
   - 1 char
   - 4 chars
   - TAB
   - as it is
 - save the new files with three options:
-  - replace the current routine files
-  - replace and rename the old files
+  - replace the original routine files
+  - replace the original and rename the old files
   - create new files and leave the original intact
 
 Simply copy the M routine anywhere in your system mapped to $zroutines and run it by executing (from the M prompt):
@@ -29,6 +29,8 @@ Simply copy the M routine anywhere in your system mapped to $zroutines and run i
 `do start^extendMprojects`
 
 You can, optionally, pass a path as string parameter. If omitted, the routine will ask for it and validate it.
+
+The routine will automatically convert all the files in that directory having the M extension.
 
 The interface will first collect all the options, then it will start converting the file, dumping a report when completed.
 
