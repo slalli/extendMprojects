@@ -16,6 +16,9 @@ It will, additionally:
   - create new files and leave the original intact
 
 Simply copy the M routine anywhere in your system and run it by executing (from the M prompt):
+
 `do start^extendMprojects`
+
 You can, optionally, pass a path as string parameter. If omitted, the routine will ask for it and validate it.
 
+The interface will first collect all the options, then it will start converting the file, dumping a report when completed.
