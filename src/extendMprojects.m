@@ -65,7 +65,7 @@ askAgainAction
 	if inputStr="R"!(inputStr="A")!(inputStr="W") set action=inputStr
 	else  goto askAgainAction
 	;
-	if action="R" goto proceed
+	if action="R" w !!,"WARNING: This option will delete the source files !!!" goto proceed
 	;
 aksAgainExtension
 	read !!,"Enter the extension you wish to have appended to the .m files: ",!,"It must start with a ., type (Q) to quit ",inputStr
@@ -393,3 +393,4 @@ RE3 I $E(A7,A2)=" " S A8=A8_$E(IN,A2) Q
 	;; ISV $ZTSLATE $ZTSLATE
 	;; ISV $ZTVALUE $ZTVALUE
 	;; ISV $ZTWORMHOLE $ZTWORMHOLE
+	;
