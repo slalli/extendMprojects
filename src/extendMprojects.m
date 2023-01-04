@@ -12,8 +12,8 @@ extendMprojects quit
 ; action		defaults to RR. Action can be: RR (replace and rename), RE (replace), NE (new name: original name + '.extended')
 ; ****************************************	
 start(sourceDir) 
-	write !!,"**********************************"
-	write !,"Extend M project "_$piece($text(+2)," ",3,4)
+	write !,"**********************************"
+	write !,"Extend M projects version "_$piece($text(+2)," ",4)
 	write !,"**********************************"
 	;
 	; Validate path
@@ -103,6 +103,8 @@ proceed
 	set cmd="" for  set cmd=$order(defs("CMD",cmd)) quit:cmd=""  do
 	. set defs("replace","cmd"," "_cmd_" ")=" "_defs("CMD",cmd)_" "
 	. set defs("replace","cmd"," "_cmd_":")=" "_defs("CMD",cmd)_":"
+	. set defs("replace","cmd",$char(9)_cmd_" ")=$char(9)_defs("CMD",cmd)_" "
+	. set defs("replace","cmd",$char(9)_cmd_":")=$char(9)_defs("CMD",cmd)_":"
 	;
 	set ifn="" for  set ifn=$order(defs("IFN",ifn)) quit:ifn=""  do
 	. set defs("replace","ifn",ifn_"(")=defs("IFN",ifn)_"("
@@ -124,7 +126,7 @@ proceed
 	. set cnt=0
 	. kill bufferIn
 	. for  read line quit:$zeof  set cnt=cnt+1,bufferIn(cnt)=line
-	. u $p
+	. use $p
 	. close file
 	. ;
 	. ; Process it
@@ -161,15 +163,21 @@ extendFile(buffer,defs)
 	. . . if char'=" ",char'=$char(9) set charQuit=charCnt
 	. . set line=$select(marginType="T":$char(9),marginType=1:" ",marginType=4:"    ",1:" ")_$extract(line,charQuit,$length(line))
 	. ; -------------------------
-	. ; commands
+	. ; CMD
 	. ; -------------------------
 	. set line=$$STRRPLC(line,.cmdReplace)
 	. ;
 	. ; -------------------------
-	. ; commands
+	. ; IFN
+	. ; -------------------------
+	. set line=$$STRRPLC(line,.ifnReplace)
+	. ;
+	. ; -------------------------
+	. ; ISV
 	. ; -------------------------
 	. set line=$$STRRPLC(line,.isvReplace)
 	. ;
+	. ; Populate buffer
 	. set bufferAfter(cnt)=line
 	;
 	quit *bufferAfter
@@ -283,13 +291,104 @@ RE3 I $E(A7,A2)=" " S A8=A8_$E(IN,A2) Q
 	;; IFN $ZP $ZPREVIOUS
 	;; IFN $ZSUB $ZSUBSTR
 	;; IFN $ZTR $ZTRANSLATE
-	;; IFN $ZTRI $ZTRIGGER
 	;; IFN $ZW $ZWIDTH
+	;; IFN $ZYSU $ZYSUFFIX
+	;; IFN $ZBITAND $ZBITAND
+	;; IFN $ZBITCOUNT $ZBITCOUNT
+	;; IFN $ZBITFIND $ZBITFIND
+	;; IFN $ZBITGET $ZBITGET
+	;; IFN $ZBITLEN $ZBITLEN
+	;; IFN $ZBITNOT $ZBITNOT
+	;; IFN $ZBITOR $ZBITOR
+	;; IFN $ZBITSET $ZBITSET
+	;; IFN $ZBITSTR $ZBITSTR
+	;; IFN $ZBITXOR $ZBITXOR
+	;; IFN $ZDATA $ZDATA
+	;; IFN $ZGETJPI $ZGETJPI
+	;; IFN $ZJOBEXAM $ZJOBEXAM
+	;; IFN $ZPARSE $ZPARSE
+	;; IFN $ZPEEK $ZPEEK
+	;; IFN $ZQGBLMOD $ZQGBLMOD
+	;; IFN $ZSEARCH $ZSEARCH
+	;; IFN $ZSIGPROC $ZSIGPROC
+	;; IFN $ZSOCKET $ZSOCKET
+	;; IFN $ZSYSLOG $ZSYSLOG
+	;; IFN $ZTRIGGER $ZTRIGGER
+	;; IFN $ZTRNLNM $ZTRNLNM
+	;; IFN $ZSWRITE $ZSWRITE
+	;; IFN $ZYHASH $ZYHASH
+	;; IFN $ZYISSQLNULL $ZYISSQLNULL
 	;; ISV $D $DEVICE
 	;; ISV $EC $ECODE
-	;
-	;
-	;
-	;
-	;
-	;
+	;; ISV $ES $ESTACK
+	;; ISV $ET $ETRAP
+	;; ISV $H $HOROLOG
+	;; ISV $I $IO
+	;; ISV $J $JOB
+	;; ISV $K $KEY
+	;; ISV $P $PRINCIPAL
+	;; ISV $Q $QUIT
+	;; ISV $R $REFERENCE
+	;; ISV $ST $STACK
+	;; ISV $S $STORAGE
+	;; ISV $ST $SYSTEM
+	;; ISV $T $TEST
+	;; ISV $TL $TLEVEL
+	;; ISV $TR $TRESTART
+	;; ISV $X $X
+	;; ISV $Y $Y
+	;; ISV $ZA $ZA
+	;; ISV $ALLOCSTOR $ALLOCSTOR
+	;; ISV $B $ZB
+	;; ISV $ZCHSET $ZCHSET
+	;; ISV $ZCLOSE $ZCLOSE
+	;; ISV $ZCMDLINE $ZCMDLINE
+	;; ISV $ZCO $ZCOMPILE
+	;; ISV $ZC $ZCSTATUS
+	;; ISV $ZDA $ZDATEFORM
+	;; ISV $ZD $ZDIRECTORY
+	;; ISV $ZED $ZEDITOR
+	;; ISV $ZEO $ZEOF
+	;; ISV $ZE $ZERROR
+	;; ISV $ZG $ZGBLDIR
+	;; ISV $ZH $ZHOROLOG
+	;; ISV $ZINI $ZININTERRUPT
+	;; ISV $ZIO $ZIO
+	;; ISV $ZJ $ZJOB
+	;; ISV $ZKEY $ZKEY
+	;; ISV $ZL $ZLEVEL
+	;; ISV $ZMAXTPTI $ZMAXTPTIME
+	;; ISV $ZMO $ZMODE
+	;; ISV $ZONLNRLBK $ZONLNRLBK 
+	;; ISV $ZPATN $ZPATNUMERIC
+	;; ISV $ZPIN $ZPIN
+	;; ISV $ZPOS $ZPOSITION
+	;; ISV $ZPOUT $ZPOUT
+	;; ISV $ZPROM $ZPROMPT
+	;; ISV $ZQUIT $ZQUIT
+	;; ISV $REALSTOR $ZREALSTOR
+	;; ISV $ZRELDATE $ZRELDATE
+	;; ISV $ZROU $ZROUTINES
+	;; ISV $ZSO $ZSOURCE
+	;; ISV $ZS $ZSTATUS
+	;; ISV $ZST $ZSTEP
+	;; ISV $ZSTRP $ZSTRPLLIM
+	;; ISV $ZST $ZSYSTEM
+	;; ISV $ZTE $ZTEXIT
+	;; ISV $ZTIM $ZTIMEOUT
+	;; ISV $T $ZTRAP
+	;; ISV $ZUSEDSTOR $ZUSEDSTOR
+	;; ISV $ZUT $ZUT
+	;; ISV $ZV $ZVERSION
+	;; ISV $ZYER $ZYERROR
+	;; ISV $ZYINTRSIG $ZYINTRSIG
+	;; ISV $ZYRE $ZYRELEASE
+	;; ISV $ZYSQLNULL $ZYSQLNULL
+	;; ISV $ZTDATA $ZTDATA
+	;; ISV $ZTDELIM $ZTDELIM
+	;; ISV $ZTLEVEL $ZTLEVEL
+	;; ISV $ZTNAME $ZTNAME
+	;; ISV $ZTRIGGEROP $ZTRIGGEROP
+	;; ISV $ZTSLATE $ZTSLATE
+	;; ISV $ZTVALUE $ZTVALUE
+	;; ISV $ZTWORMHOLE $ZTWORMHOLE
