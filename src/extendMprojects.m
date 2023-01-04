@@ -1,5 +1,10 @@
 	; extendMprojects
 	; version 1.0.0
+	;
+	; author: 			Stefano Lalli
+	; company name: 	jsonHIVES
+	; licence: 			GNU AFFERO GENERAL PUBLIC LICENSE
+	;
 extendMprojects quit
 ; ****************************************	
 ; start(sourceDir,action) 
