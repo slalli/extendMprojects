@@ -25,7 +25,7 @@ start(sourceDir)
 	; Check # of files in dir
 	if $extract(sourceDir,$length(sourceDir))'="/" set sourceDir=sourceDir_"/"
 	set cnt=0
-	for  set file=$zsearch(sourceDir_"*.m") quit:file=""  set files(file)="",cnt=cnt+1
+	for  set file=$zsearch(sourceDir_"*.m") quit:file=""  set:file'="/extendMprojects/src/extendMprojects.m" files(file)="",cnt=cnt+1
 	set files=cnt
 	;
 	if $data(files)=0 do  quit
@@ -92,6 +92,7 @@ askAgainAction
 	. ;
 	. ;
 	. ; Save it
+	. w !
 	. zwr bufferOut
 	;
 	;
@@ -100,8 +101,13 @@ askAgainAction
 	;
 	;
 extendFile(buffer,defs)
-	new bufferAfter,cnt,line,cmd,lastPos,foundPos,match,newLine,newLine2
-	new charCnt,char,charQuit,ifn
+	new bufferAfter,cnt,line,cmd,cmdReplace
+	;
+	;build replace buffer
+	kill spec
+	set cmd="" for  set cmd=$order(defs("CMD",cmd)) quit:cmd=""  do
+	. set cmdReplace(" "_cmd_" ")=" "_defs("CMD",cmd)_" "
+	. set cmdReplace(" "_cmd_":")=" "_defs("CMD",cmd)_":"
 	;
 	set cnt=0
 	for  set cnt=$order(buffer(cnt)) quit:cnt=""  do
@@ -119,25 +125,9 @@ extendFile(buffer,defs)
 	. ; -------------------------
 	. ; commands
 	. ; -------------------------
-	. set (cmd,newLine)=""
-	. for  set cmd=$order(defs("CMD",cmd)) quit:cmd=""  do
-	. . set foundPos=0,lastPos=1,match=""
-	. . for  set foundPos=$find(line,cmd_" ",lastPos) quit:foundPos=0  do
-	. . . set match=$extract(line,foundPos-2)
-	. . . WRITE !,"*MATCH:",match
-	. . . ; is next char either a space/tab or a : AND (is it first char OR prev char is space/tab)
-	. . . if $extract(line,foundPos-1)=" "!($extract(line,foundPos-1)=$char(9))!($extract(line,foundPos-1)=":"),lastPos=2!($extract(line,foundPos-3)=" ")!($extract(line,foundPos-3)=$char(9)) do
-	. . . . ; Replace
-	. . . . set newLine=newLine_$extract(line,lastPos,foundPos-3)_defs("CMD",cmd)_" "
-	. . . . set line=$extract(line,foundPos,$length(line))
-	. . . ;
-	. . . set lastPos=foundPos
-	. ;
-	. if newLine="" set newLine=line
-	. else  if $length(line)'=$length(newLine) set newLine=newLine_$extract(line,foundPos,$length(line))
-	. ;
-	. set bufferAfter(cnt)=newLine
-	;	
+	. set line=$$STRRPLC(line,.cmdReplace)
+	. set bufferAfter(cnt)=line
+	;
 	quit *bufferAfter
 	;
 	;
@@ -190,8 +180,42 @@ extendFile(buffer,defs)
 	;; CMD ZTS ZTSTART
 	;; CMD ZW ZWITHDRAW
 	;; CMD ZWR ZWRITE
-	;; IFN A ASCII
-	;; IFN C CHAR
-	;; ISV D DEVICE
-	;; ISV EC ECODE
+	;; IFN $A $ASCII
+	;; IFN $C $CHAR
+	;; ISV $D $DEVICE
+	;; ISV $EC $ECODE
+	;
+	;
+	;
+STRRPLC(IN,SPEC) ;
+	Q:'$D(IN) "" Q:$D(SPEC)'>9 IN N A1,A2,A3,A4,A5,A6,A7,A8
+	S A1=$L(IN),A7=$J("",A1),A3="",A6=9999 F  S A3=$O(SPEC(A3)) Q:A3=""  S A6(A6)=A3,A6=A6-1
+	F A6=0:0 S A6=$O(A6(A6)) Q:A6'>0  S A3=A6(A6) D:$D(SPEC(A3))#2 RE1
+	S A8="" F A2=1:1:A1 D RE3
+	Q A8
+	;
+RE1 S A4=$L(A3),A5=0 F  S A5=$F(IN,A3,A5) Q:A5<1  D RE2
+	Q
+RE2 Q:$E(A7,A5-A4,A5-1)["X"  S A8(A5-A4)=SPEC(A3)
+	F A2=A5-A4:1:A5-1 S A7=$E(A7,1,A2-1)_"X"_$E(A7,A2+1,A1)
+	Q
+RE3 I $E(A7,A2)=" " S A8=A8_$E(IN,A2) Q
+	S:$D(A8(A2)) A8=A8_A8(A2)
+	Q
+	;
+	;
+STRJR ;Right justify
+	N A3
+	S:A1["T" A1=+A1,A=$E(A,1,A1)
+	S A3=$J("",A1-$L(A)) S:$D(A2) A3=$TR(A3," ",A2)
+	Q A3_A
+	;
+	;
+STRJL ;Left justify
+	N A3
+	S:A1["T" A1=+A1,A=$E(A,1,A1)
+	S A3=$J("",A1-$L(A)) S:$G(A2)]"" A3=$TR(A3," ",A2)
+	Q A_A3
+	;
+	;
 	;
