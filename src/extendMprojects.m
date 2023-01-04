@@ -25,7 +25,7 @@ start(sourceDir)
 	write !
 	;
 	new file,files,replaceType,marginType,cnt,inputStr,defs,line,action
-	new bufferIn,bufferOut,cmd,ifn,isv,quitNow,extension
+	new bufferIn,bufferOut,cmd,ifn,isv,quitNow,extension,newFile
 	;
 	; Check # of files in dir
 	if $extract(sourceDir,$length(sourceDir))'="/" set sourceDir=sourceDir_"/"
@@ -120,6 +120,7 @@ proceed
 	write !
 	set file=""
 	for  set file=$order(files(file)) quit:file=""  do
+	. set newFile=""
 	. ;Read the original file
 	. write !,"Processing file: "_file,!
 	. open file:readonly
@@ -133,12 +134,18 @@ proceed
 	. ; Process it
 	. set *bufferOut=$$extendFile(.bufferIn,.defs)
 	. ;
+	. set newFile=file_$get(extension)
+	. ; if action=A, rename the old file
+	. if action="A" do
+	. . do saveFile(newFile,.bufferIn)
 	. ;
 	. ; Save it
-	. w !
-	. zwr bufferOut
+	. if action="R"!(action="A") do
+	. . do saveFile(file,.bufferOut)
+	. else  do saveFile(newFile,.bufferOut)
+	. ;
 	;
-	;
+	write !!,"All file processed.",!
 	;
 	quit
 	;
@@ -206,6 +213,16 @@ RE2 Q:$E(A7,A5-A4,A5-1)["X"  S A8(A5-A4)=SPEC(A3)
 RE3 I $E(A7,A2)=" " S A8=A8_$E(IN,A2) Q
 	S:$D(A8(A2)) A8=A8_A8(A2)
 	Q
+	;
+	;
+saveFile(file,buffer)
+	open file:newversion
+	use file
+	set cnt=""
+	for  set cnt=$order(buffer(cnt)) quit:cnt=""  write buffer(cnt)_$char(10)
+	close file
+	;
+	quit
 	;
 	;
 	; ---------------------------

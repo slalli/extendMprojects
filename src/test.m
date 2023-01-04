@@ -57,3 +57,4 @@ PROCESS(SMSG,NOTIMEOUT,NOGC)
 	s $d="test"
 	s a=$d
 
+
