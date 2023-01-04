@@ -22,3 +22,5 @@ Simply copy the M routine anywhere in your system and run it by executing (from 
 You can, optionally, pass a path as string parameter. If omitted, the routine will ask for it and validate it.
 
 The interface will first collect all the options, then it will start converting the file, dumping a report when completed.
+
+Feel free to create issue to address problems or fork / MR eventual fixes.
