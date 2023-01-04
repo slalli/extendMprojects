@@ -6,12 +6,11 @@
 	; licence: 			GNU AFFERO GENERAL PUBLIC LICENSE
 	;
 extendMprojects quit
-; ****************************************	
-; start(sourceDir,action) 
-; sourceDir		directory where the .m files are
-; action		defaults to RR. Action can be: RR (replace and rename), RE (replace), NE (new name: original name + '.extended')
-; ****************************************	
-start(sourceDir) 
+; ****************************************
+; start(sourceDir)
+; sourceDir		(optional) directory where the .m files are
+; ****************************************
+start(sourceDir)
 	write !,"**********************************"
 	write !,"Extend M projects version "_$piece($text(+2)," ",4)
 	write !,"**********************************"
@@ -192,12 +191,12 @@ extendFile(buffer,defs)
 	;
 	;
 STRRPLC(IN,SPEC) ;
-	Q:'$D(IN) "" 
-	Q:$D(SPEC)'>9 IN 
+	Q:'$D(IN) ""
+	Q:$D(SPEC)'>9 IN
 	;
 	N A1,A2,A3,A4,A5,A6,A7,A8
 	;
-	S A1=$L(IN),A7=$J("",A1),A3="",A6=9999 
+	S A1=$L(IN),A7=$J("",A1),A3="",A6=9999
 	;
 	F  S A3=$O(SPEC(A3)) Q:A3=""  S A6(A6)=A3,A6=A6-1
 	F A6=0:0 S A6=$O(A6(A6)) Q:A6'>0  S A3=A6(A6) D:$D(SPEC(A3))#2 RE1
@@ -377,7 +376,7 @@ saveFile(file,buffer)
 	;; ISV $ZL $ZLEVEL
 	;; ISV $ZMAXTPTI $ZMAXTPTIME
 	;; ISV $ZMO $ZMODE
-	;; ISV $ZONLNRLBK $ZONLNRLBK 
+	;; ISV $ZONLNRLBK $ZONLNRLBK
 	;; ISV $ZPATN $ZPATNUMERIC
 	;; ISV $ZPIN $ZPIN
 	;; ISV $ZPOS $ZPOSITION
