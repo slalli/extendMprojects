@@ -4,8 +4,11 @@ This small routine extends short M notation routines into long M notation.
 It works only for routines written in GT.M / YottaDB.
 
 So:
+
 `F  S X=$O(A(X)) Q:X=""  D`
+
 will be translated into:
+
 `for  set X=$order(A(x)) quit:X=""  do`
 
 
