@@ -1,2 +1,2 @@
 zroutines:
-/YDBGUI/objects*(/YDBGUI/routines /YDBGUI/mwebserver) /data/r1.35_x86_64/o*(/data/r1.35_x86_64/r) /opt/yottadb/current/plugin/o/_ydbgui.so /opt/yottadb/current/plugin/o/_ydbmwebserver.so /opt/yottadb/current/plugin/o/_ydbposix.so /opt/yottadb/current/libyottadbutil.so
+/YDBGUI/objects*(/YDBGUI/routines /YDBGUI/mwebserver /extendMprojects/src) /data/r1.35_x86_64/o*(/data/r1.35_x86_64/r) /opt/yottadb/current/plugin/o/_ydbgui.so /opt/yottadb/current/plugin/o/_ydbmwebserver.so /opt/yottadb/current/plugin/o/_ydbposix.so /opt/yottadb/current/libyottadbutil.so
