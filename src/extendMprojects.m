@@ -145,7 +145,7 @@ proceed
 	. else  do saveFile(newFile,.bufferOut)
 	. ;
 	;
-	write !!,"All file processed.",!
+	write !!,"All "_files_" file"_$select(files=1:"",1:"s")_" processed.",!
 	;
 	quit
 	;
